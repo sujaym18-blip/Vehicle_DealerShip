@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-import authRoutes from './routes/authRoutes.js';
+import authRoutes from './Routes/authRoutes.js';
 
 // HAMARI ROUTE FILE IMPORT KARNA (Dhyan rahe .js lagana zaroori hai!)
 import vehicleRoutes from './routes/vehicleRoutes.js';
