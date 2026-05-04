@@ -3,7 +3,7 @@ import Vehicle from '../models/Vehicles.model.js';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import authMiddleware from '../middlewares/authMiddleware.js';
+import authMiddleware from '../Middlewares/authMiddleware.js';
 
 const router = express.Router();
 
