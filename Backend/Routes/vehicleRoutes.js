@@ -1,5 +1,5 @@
 import express from 'express';
-import Vehicle from '../models/Vehicles.model.js';
+import Vehicle from '../Models/Vehicles.model.js';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
