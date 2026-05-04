@@ -7,7 +7,7 @@ import cors from 'cors';
 import authRoutes from './Routes/authRoutes.js';
 
 // HAMARI ROUTE FILE IMPORT KARNA (Dhyan rahe .js lagana zaroori hai!)
-import vehicleRoutes from './routes/vehicleRoutes.js';
+import vehicleRoutes from './Routes/vehicleRoutes.js';
 
 // .env file se password aur PORT read karne ki permission
 dotenv.config();
