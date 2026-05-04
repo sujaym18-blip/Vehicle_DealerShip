@@ -6,14 +6,13 @@ const Home = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('All');
     
-    // 1. Token check karna (Button dikhane ke liye)
+    // Token check karna (Delete Button dikhane ke liye)
     const token = localStorage.getItem('token');
 
     // Page load hote hi data fetch karna
     useEffect(() => {
         const fetchVehicles = async () => {
             try {
-                // GET request public hai, isme token nahi chahiye
                 const response = await axios.get('http://localhost:5000/api/vehicles');
                 setVehicles(response.data);
             } catch (error) {
@@ -23,7 +22,7 @@ const Home = () => {
         fetchVehicles();
     }, []);
 
-    // Delete functionality (Token ke sath)
+    // Delete functionality
     const handleDelete = async (id) => {
         if (!token) {
             alert("Delete karne ke liye Admin login zaroori hai!");
@@ -34,7 +33,7 @@ const Home = () => {
             try {
                 await axios.delete(`http://localhost:5000/api/vehicles/${id}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}` // 🛡️ GUARD KO ID CARD DIKHA RAHE HAIN
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 
@@ -97,8 +96,13 @@ const Home = () => {
                             overflow: 'hidden',
                             boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
                         }}>
+                            
+                            {/* ☁️ SMART IMAGE LOGIC YAHAN HAI ☁️ */}
                             <img 
-                                src={vehicle.imageUrl ? `http://localhost:5000${vehicle.imageUrl}` : "https://via.placeholder.com/300x200?text=No+Image+Available"} 
+                                src={vehicle.imageUrl 
+                                    ? (vehicle.imageUrl.startsWith('http') ? vehicle.imageUrl : `http://localhost:5000${vehicle.imageUrl}`) 
+                                    : "https://via.placeholder.com/300x200?text=No+Image+Available"
+                                } 
                                 alt={vehicle.model} 
                                 style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                             />
@@ -113,7 +117,7 @@ const Home = () => {
                                 
                                 <h2 style={{ margin: '0 0 15px 0', color: '#28a745' }}>₹ {vehicle.price.toLocaleString('en-IN')}</h2>
                                 
-                                {/* 2. SMART BUTTON: Agar token hai, tabhi Delete ka button dikhao */}
+                                {/* Agar token hai, tabhi Delete ka button dikhao */}
                                 {token && (
                                     <button 
                                         onClick={() => handleDelete(vehicle._id)} 

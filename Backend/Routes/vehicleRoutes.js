@@ -1,19 +1,32 @@
 import express from 'express';
 import Vehicle from '../models/Vehicles.model.js';
 import multer from 'multer';
-import authMiddleware from '../Middlewares/authMiddleware.js'; // 🛡️ GUARD IMPORT KIYA
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Multer Setup (Waisa hi rahega)
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) { cb(null, 'uploads/'); },
-    filename: function(req, file, cb) { cb(null, Date.now() + '-' + file.originalname); }
+// 1. Cloudinary Config (Environment variables se data uthana)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// 2. Multer ko batana ki photo Cloudinary par save karni hai
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'vehicle_dealership', // Cloudinary mein is naam ka folder banega
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp']
+    },
 });
 const upload = multer({ storage: storage });
 
+// --- ROUTES ---
 
-// 1. GET API (Public - Koi guard nahi, sab gaadiyan dekh sakte hain)
+// GET API (Public)
 router.get('/', async(req, res) => {
     try {
         const vehicles = await Vehicle.find();
@@ -23,12 +36,13 @@ router.get('/', async(req, res) => {
     }
 });
 
-// 2. POST API (Protected - Yahan bich mein 'authMiddleware' laga diya)
+// POST API (Protected)
 router.post('/', authMiddleware, upload.single('image'), async(req, res) => {
     try {
         const newVehicleData = {
             ...req.body,
-            imageUrl: req.file ? `/uploads/${req.file.filename}` : ''
+            // req.file.path ab hume Cloudinary ka direct URL dega! ☁️
+            imageUrl: req.file ? req.file.path : ''
         };
         const newVehicle = new Vehicle(newVehicleData);
         const savedVehicle = await newVehicle.save();
@@ -38,7 +52,7 @@ router.post('/', authMiddleware, upload.single('image'), async(req, res) => {
     }
 });
 
-// 3. DELETE API (Protected - Yahan bhi 'authMiddleware' laga diya)
+// DELETE API (Protected)
 router.delete('/:id', authMiddleware, async(req, res) => {
     try {
         const deletedVehicle = await Vehicle.findByIdAndDelete(req.params.id);
